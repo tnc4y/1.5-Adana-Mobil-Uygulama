@@ -145,7 +145,7 @@ Uygulama su koleksiyonlari okuyarak calisir:
 
 - Gelistirici: Tuncay (GitHub: `tnc4y`)
 - Repo: `tnc4y/birbucukadanaadmin`
-- Iletisim: E-posta/website bilgisi eklenebilir.
+- Iletisim: mailto:hi@tncy.dev
 
 ## Lisans
 
