@@ -1,0 +1,289 @@
+import 'package:flutter/material.dart';
+
+import '../models/award.dart';
+import '../models/team.dart';
+import '../services/content_service.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/network_image_box.dart';
+import 'award_detail_page.dart';
+
+class AwardsPage extends StatelessWidget {
+  const AwardsPage({super.key, required this.contentService});
+
+  final ContentService contentService;
+
+  Widget _sectionTitle(BuildContext context, String title, IconData icon,
+      {String? badge}) {
+    return Row(
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: const Color(0xFFEAF0FD),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: const Color(0xFF12366D), size: 20),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF102345),
+                ),
+          ),
+        ),
+        if (badge != null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F2350),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              badge,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 11,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _glassCard({required Widget child, EdgeInsets? padding}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x15132A53),
+            blurRadius: 26,
+            offset: Offset(0, 14),
+          ),
+        ],
+        border: Border.all(color: const Color(0xFFE4EBF8)),
+      ),
+      padding: padding ?? const EdgeInsets.all(16),
+      child: child,
+    );
+  }
+
+  Widget _awardCard(BuildContext context, Award item) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => AwardDetailPage(award: item),
+          ),
+        );
+      },
+      child: _glassCard(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 92,
+              height: 92,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF4F7FD),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: item.mediaUrl.trim().isNotEmpty
+                  ? NetworkImageBox(
+                      imageUrl: item.mediaUrl,
+                      borderRadius: 8,
+                      fit: BoxFit.cover,
+                    )
+                  : const Icon(
+                      Icons.emoji_events_outlined,
+                      size: 40,
+                      color: Color(0xFF12366D),
+                    ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    color: const Color(0xFF0F1E39),
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF12366D),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (item.year.trim().isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEAF0FD),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        item.year,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: const Color(0xFF12366D),
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ),
+                  if (item.projectName.trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      item.projectName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF17315F),
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionBlock(
+      BuildContext context, String title, IconData icon, List<Award> items,
+      {bool showBadge = true}) {
+    return Column(
+      children: [
+        _sectionTitle(
+          context,
+          title,
+          icon,
+          badge: showBadge ? '${items.length}' : null,
+        ),
+        const SizedBox(height: 8),
+        ...items.map(
+          (item) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _awardCard(context, item),
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<Award>>(
+      stream: contentService.watchAwards(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Ödül yükleme hatası: ${snapshot.error}'),
+          );
+        }
+
+        final awards = snapshot.data ?? <Award>[];
+        if (awards.isEmpty) {
+          return const EmptyState(message: 'Ödül bulunamadı.');
+        }
+
+        return StreamBuilder<List<Team>>(
+          stream: contentService.watchTeams(),
+          builder: (context, teamSnapshot) {
+            final teams = teamSnapshot.data ?? <Team>[];
+
+            final general =
+                awards.where((item) => item.teamId.trim().isEmpty).toList();
+            final byTeamId = <String, List<Award>>{};
+            for (final award in awards) {
+              final teamId = award.teamId.trim();
+              if (teamId.isEmpty) continue;
+              byTeamId.putIfAbsent(teamId, () => <Award>[]).add(award);
+            }
+
+            final sections = <Widget>[];
+            if (general.isNotEmpty) {
+              sections.add(
+                _sectionBlock(
+                  context,
+                  'Genel Ödüller',
+                  Icons.public_outlined,
+                  general,
+                ),
+              );
+            }
+
+            for (final team in teams) {
+              final items = byTeamId.remove(team.id);
+              if (items == null || items.isEmpty) continue;
+              sections.add(
+                _sectionBlock(
+                  context,
+                  team.name,
+                  Icons.groups_2_outlined,
+                  items,
+                  showBadge: false,
+                ),
+              );
+            }
+
+            final remainingIds = byTeamId.keys.toList()..sort();
+            for (final teamId in remainingIds) {
+              final items = byTeamId[teamId]!;
+              if (items.isEmpty) continue;
+              sections.add(
+                _sectionBlock(
+                  context,
+                  teamId,
+                  Icons.groups_2_outlined,
+                  items,
+                  showBadge: false,
+                ),
+              );
+            }
+
+            if (sections.isEmpty) {
+              return const EmptyState(
+                message: 'Ödüller için gösterilecek kategori bulunamadı.',
+              );
+            }
+
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: sections,
+            );
+          },
+        );
+      },
+    );
+  }
+}
