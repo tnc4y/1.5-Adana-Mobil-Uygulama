@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'app.dart';
-import 'firebase_options.dart';
+import 'firebase_options_example.dart';
 import 'services/content_service.dart';
 
 Future<void> main() async {
