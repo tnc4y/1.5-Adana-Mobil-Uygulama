@@ -1,8 +1,8 @@
 # 1.5 Adana Teknoloji Takimlari Mobil Uygulamasi
 
-<p align="center">
+<span style="color: blue;">
   <img src="assets/images/logo.svg" alt="1.5 Adana Logo" width="140" />
-</p>
+</span>
 
 Firebase tabanli, icerigi admin panelden yonetilen, tamamen dinamik bir takim tanitim ve duyuru mobil uygulamasi.
 
