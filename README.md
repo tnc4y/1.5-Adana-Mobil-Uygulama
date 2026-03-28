@@ -119,6 +119,8 @@ Uygulama su koleksiyonlari okuyarak calisir:
 4. Firebase dosyalarini yerlestirin:
   - Android: `android/app/google-services.json`
   - iOS: `ios/Runner/GoogleService-Info.plist`
+  - Ornek Firebase ayarlari: `lib/firebase_options_example.dart`
+  - Kendi projeniz icin bu dosyadaki `REPLACE_WITH_*` alanlarini guncelleyin
 5. Uygulamayi calistirin:
   - `flutter run`
 
