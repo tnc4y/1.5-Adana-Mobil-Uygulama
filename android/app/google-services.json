@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "133586309645",
+    "project_id": "birbucukadanav2",
+    "storage_bucket": "birbucukadanav2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133586309645:android:e3c2893eb4d359fbad7b44",
+        "android_client_info": {
+          "package_name": "com.birbucukadana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEyKwbBcLLUTOzdd6MjlkIIjk2xo9s_wQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
