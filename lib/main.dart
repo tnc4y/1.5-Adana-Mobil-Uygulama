@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'app.dart';
-import 'firebase_options_example.dart';
+import 'firebase_options.dart';
 import 'services/content_service.dart';
 
 Future<void> main() async {
@@ -52,9 +52,11 @@ class _BootstrapAppState extends State<_BootstrapApp> {
   }
 
   Future<void> _initializeApp() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
 
     _contentService = ContentService();
 
@@ -102,40 +104,23 @@ class _BootstrapAppState extends State<_BootstrapApp> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 12,
+                    SvgPicture.asset(
+                      _logoAssetPath,
+                      colorFilter: const ColorFilter.mode(
+                        _logoTintColor,
+                        BlendMode.srcIn,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFDCE5F5)),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x1A102A56),
-                            blurRadius: 18,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: SvgPicture.asset(
-                        _logoAssetPath,
-                        colorFilter: const ColorFilter.mode(
-                          _logoTintColor,
-                          BlendMode.srcIn,
-                        ),
-                        width: 170,
-                        height: 56,
-                        fit: BoxFit.contain,
-                      ),
+                      width: 170,
+                      height: 56,
+                      fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 18),
                     const SizedBox(
-                      width: 180,
-                      child: LinearProgressIndicator(
-                        minHeight: 4,
-                        borderRadius: BorderRadius.all(Radius.circular(999)),
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        color: _logoTintColor
                       ),
                     ),
                   ],
