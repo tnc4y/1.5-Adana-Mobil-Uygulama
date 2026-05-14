@@ -1,18 +1,20 @@
 #!/bin/sh
 
-# 1. Flutter'ı indir
+# Flutter'ı indir
 git clone https://github.com/flutter/flutter.git -b stable $HOME/flutter
 export PATH="$PATH:$HOME/flutter/bin"
 
-# 2. Ana dizine git ve paketleri çek
+# Bağımlılıkları yükle
 cd ../..
 flutter pub get
 
-# 3. İŞTE BURAYA EKLE: Xcode için gerekli dosyaları önceden oluştur
+# iOS yapılandırmasını zorla tetikle
 flutter build ios --config-only --release
 
-# 4. iOS klasörüne dön ve Pod'ları kur
+# Pod kurulumunu temizle ve güncelle
 cd ios
-pod install
+rm -rf Pods
+rm Podfile.lock
+pod install --repo-update
 
 exit 0
